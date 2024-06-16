@@ -47,16 +47,16 @@ const Bot_Message = async(event) => {
     try{
         let userdata = await User.findOne({UserID:UserID,UserName:UserName})
         
-            console.log("已找到使用者資訊\n", userdata);
-            let roomdata = await Room.findOne({ CurrentUserID: UserID, CurrentUserName: UserName })
+        console.log("已找到使用者資訊\n", userdata);
+        let roomdata = await Room.findOne({ CurrentUserID: UserID, CurrentUserName: UserName })
         
-            console.log("已找到使用者房間資訊\n", roomdata);
-            console.log(roomdata,userdata);
-            //比對資料庫的房號以及使用者ID=>是否已登入/////////////
-            if(userdata != null && roomdata != null){
-            //使用者登出 //event.reply("歡迎");
+        console.log("已找到使用者房間資訊\n", roomdata);
+        console.log(roomdata,userdata);
+        //比對資料庫的房號以及使用者ID=>是否已登入/////////////
+        if(userdata != null && roomdata != null){
+        //使用者登出 //event.reply("歡迎");
             if(roomdata.Islogin){
-                    switch (event.message.text) {
+                switch (event.message.text) {
                     //使用者LineBot訂餐
                     case "我要點餐":
                         OrderUserID = UserID;
@@ -76,7 +76,7 @@ const Bot_Message = async(event) => {
                         });
                         event.reply(UserName + '您已登出系統！\n若要再次使用服務請重新登入！');
                         break;
-                        case "歷史查詢":
+                    case "歷史查詢":
                         //比對資料庫的房號以及使用者ID=>先提取User總訂單數再用迴圈把每一筆提出來
                         let userdata = await User.findOne({ UserID: UserID, UserName: UserName }) ;
                 
@@ -136,8 +136,8 @@ const Bot_Message = async(event) => {
                                             }
                                         }
                                     }
-                                        switch (historydata.orderstatus) {
-                                            case "working":
+                                    switch (historydata.orderstatus) {
+                                        case "working":
                                             stringmenu += ("\n\n此筆訂單目前還在運送中或處理中！");
                                             break;
                                         case "canceled":
@@ -148,7 +148,7 @@ const Bot_Message = async(event) => {
                                             break;
                                         default:
                                             break;
-                                        }
+                                    }
                                     stringfororder += ("\n第" + (i + 1) + "筆訂單明細如下：" + stringmenu + "\n此筆訂單消費金額為:NTD " + historydata.money + "元\n------------------------------------");
                                 }
                             }catch (e) {
@@ -404,6 +404,7 @@ const App_Menu = async (req, res) => {
 	if (ServerCanOrder){
 		try{
 			let { product, total } = req.body;
+            console.log(OrderUserID, OrderUserName)
 			let userdata = await User.findOneAndUpdate({ UserID: OrderUserID, UserName: OrderUserName }, { Isorder: true }, { new: true })
 				.clone().catch(function (err) { console.log(err) });
 			console.log("已提取訂餐使用者資訊.\n", userdata.totalmoney);
@@ -442,7 +443,8 @@ const App_Menu = async (req, res) => {
 			console.log("金額" + total);
 			bot.push(OrderUserID, OrderUserName + '您好\n我們已經收到您的訂單！\n餐點正在製作中，請稍後片刻！');
 			ServerCanOrder = false;
-			res.send();
+            res.json({message: "訂單處理中,請稍後..."});
+			//res.json({message: "Your order is being processed..."});
 		}catch(e){
 			console.log("error\n", e);
 		}

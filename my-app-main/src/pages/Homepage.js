@@ -53,9 +53,14 @@ const Homepage = () => {
   // **   send   request    **//
   const sendHandler = () => {
     setShow(false);
-    axios.post("https://backend-44oe.onrender.com/Menu", {
+    console.log(Product, total);
+    axios.post("/Menu", {
       product: Product,
       total: total,
+    }).then(data => {
+      console.log(data.message);
+    }).catch(err => {
+      console.log(err);
     });
   };
   // **    //   **     //   **//
